@@ -35,12 +35,11 @@ router.post('/', (request, response) => {
     }
 
     function thankyou(agent) {
-        agent.add(`Thank you for your time. Have a nice day`);
+        agent.add(`Thank you for your time. Have a nice day.`);
     }
 
     function endSession(agent) {
-        agent.add(`Alright, maybe next time.`);
-        thankyou(agent);
+        agent.add(`Alright, maybe next time. Have a great day!`);
     }
 
     function questionOne(agent) {
