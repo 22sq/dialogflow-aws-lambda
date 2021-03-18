@@ -44,7 +44,10 @@ router.post('/', (request, response) => {
     }
 
     function questionOne(agent) {
-        agent.add(`How are you feeling today?`);
+        console.log('context: ' + JSON.stringify(request.contexts));
+        agent.add(
+            `On a scale of 1 to 10 (from worst to best), how are you feeling today?`
+        );
     }
 
     function questionTwo(agent) {
@@ -55,10 +58,10 @@ router.post('/', (request, response) => {
     let intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome);
     intentMap.set('Default Fallback Intent', fallback);
-    intentMap.set('Default Welcome Intent - yes', questionOne);
-    intentMap.set('Default Welcome Intent - no', endSession);
-    intentMap.set('Question One Response', questionTwo);
-    intentMap.set('Question Two Response', thankyou);
+    intentMap.set('Question 1', questionOne);
+    intentMap.set('Decline Survey', endSession);
+    intentMap.set('Question 2', questionTwo);
+    intentMap.set('End Survey', thankyou);
     agent.handleRequest(intentMap);
 });
 
