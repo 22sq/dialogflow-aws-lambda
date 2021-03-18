@@ -1,6 +1,6 @@
 'use strict';
 
-const {WebhookClient, Suggestion} = require('dialogflow-fulfillment');
+const { WebhookClient, Suggestion } = require('dialogflow-fulfillment');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const compression = require('compression');
@@ -18,28 +18,37 @@ router.use(awsServerlessExpressMiddleware.eventContext());
 
 router.post('/', (request, response) => {
     const agent = new WebhookClient({ request, response });
-    console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
+    console.log(
+        'Dialogflow Request headers: ' + JSON.stringify(request.headers)
+    );
     console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
-   
+
     function welcome(agent) {
-      agent.add(`Welcome to the athlete survey. Are you ready to get started?`);
+        agent.add(
+            `Welcome to the athlete survey. Are you ready to get started?`
+        );
     }
-   
+
     function fallback(agent) {
-      agent.add(`I didn't understand`);
-      agent.add(`I'm sorry, can you try again?`);
+        agent.add(`I didn't understand`);
+        agent.add(`I'm sorry, can you try again?`);
     }
-    
+
+    function endSession(agent) {
+        agent.add(`Alright, maybe next time.`);
+        thankyou(agent);
+    }
+
+    function thankyou(agent) {
+        agent.add(`Thank you for your time. Have a nice day`);
+    }
+
     function questionOne(agent) {
         agent.add(`How are you feeling today?`);
     }
-    
+
     function questionTwo(agent) {
         agent.add(`What is your general mood after the game?`);
-    }
-    
-    function thankyou(agent) {
-        agent.add(`Thank you for your time. Have a nice day`);
     }
 
     // Run the proper function handler based on the matched Dialogflow intent name
@@ -47,6 +56,7 @@ router.post('/', (request, response) => {
     intentMap.set('Default Welcome Intent', welcome);
     intentMap.set('Default Fallback Intent', fallback);
     intentMap.set('Default Welcome Intent - yes', questionOne);
+    intentMap.set('Default Welcome Intent - no', endSession);
     intentMap.set('Question One Response', questionTwo);
     intentMap.set('Question Two Response', thankyou);
     agent.handleRequest(intentMap);
