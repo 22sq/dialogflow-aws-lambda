@@ -34,13 +34,13 @@ router.post('/', (request, response) => {
         agent.add(`I'm sorry, can you try again?`);
     }
 
+    function thankyou(agent) {
+        agent.add(`Thank you for your time. Have a nice day`);
+    }
+
     function endSession(agent) {
         agent.add(`Alright, maybe next time.`);
         thankyou(agent);
-    }
-
-    function thankyou(agent) {
-        agent.add(`Thank you for your time. Have a nice day`);
     }
 
     function questionOne(agent) {
