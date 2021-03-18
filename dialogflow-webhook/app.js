@@ -22,18 +22,33 @@ router.post('/', (request, response) => {
     console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
    
     function welcome(agent) {
-      agent.add(`Welcome to my agent on AWS Lambda!`);
+      agent.add(`Welcome to the athlete survey. Are you ready to get started?`);
     }
    
     function fallback(agent) {
       agent.add(`I didn't understand`);
       agent.add(`I'm sorry, can you try again?`);
-  }
+    }
+    
+    function questionOne(agent) {
+        agent.add(`How are you feeling today?`);
+    }
+    
+    function questionTwo(agent) {
+        agent.add(`What is your general mood after the game?`);
+    }
+    
+    function thankyou(agent) {
+        agent.add(`Thank you for your time. Have a nice day`);
+    }
 
     // Run the proper function handler based on the matched Dialogflow intent name
     let intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome);
     intentMap.set('Default Fallback Intent', fallback);
+    intentMap.set('Default Welcome Intent - yes', questionOne);
+    intentMap.set('Question One Response', questionTwo);
+    intentMap.set('Question Two Response', thankyou);
     agent.handleRequest(intentMap);
 });
 
