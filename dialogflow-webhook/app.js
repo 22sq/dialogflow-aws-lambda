@@ -25,7 +25,7 @@ router.post('/', (request, response) => {
 
     function welcome(agent) {
         agent.add(
-            `Welcome to the athlete survey. Are you ready to get started?`
+            `Welcome to the athlete survey. Here comes your first question. `
         );
     }
 
@@ -43,14 +43,34 @@ router.post('/', (request, response) => {
     }
 
     function questionOne(agent) {
-        console.log('context: ' + JSON.stringify(request.contexts));
+        var contexts = JSON.stringify(
+            request.body.queryResult.outputContexts[0].parameters
+                .currentQuestion
+        );
+        console.log('contexts: ' + contexts);
         agent.add(
             `On a scale of 1 to 10 (from worst to best), how are you feeling today?`
         );
     }
 
     function questionTwo(agent) {
-        agent.add(`What is your general mood after the game?`);
+        var contexts = JSON.stringify(
+            request.body.queryResult.outputContexts[0].parameters
+                .currentQuestion
+        );
+        var questionOneResponse = JSON.stringify(
+            request.body.queryResult.outputContexts[0].parameters
+                .question1Response
+        );
+        console.log('contexts: ' + contexts);
+        if (
+            Number(questionOneResponse) > 0 &&
+            Number(questionOneResponse) < 11
+        ) {
+            agent.add(`What is your general mood after the game?`);
+        } else {
+            agent.add(`Please enter a number between 1 and 10.`);
+        }
     }
 
     // Run the proper function handler based on the matched Dialogflow intent name
