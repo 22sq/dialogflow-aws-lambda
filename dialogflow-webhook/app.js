@@ -24,6 +24,7 @@ router.post('/', (request, response) => {
     console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
     // Variable Declerations
+    var questionNum = '';
     var myQuestion = '';
     var myResponseType = '';
     let questionObj = {
@@ -51,17 +52,20 @@ router.post('/', (request, response) => {
 
     // General Notifications
     function welcome(agent) {
-        myQuestion = questionObj.question1.question;
-        myResponseType = questionObj.question1.expectedResponseType;
-        console.log('question: ' + myQuestion);
-        agent.setContext({
-            name: myResponseType,
-            lifespan: 1,
-            parameters: { currentQuestion: 1 },
-        });
+        // questionNum =
+        //     request.body.queryResult.outputContexts[0].parameters
+        //         .currentQuestion;
+        // myQuestion = questionObj['question' + questionNum].question;
+        // myResponseType = questionObj.question1.expectedResponseType;
+        // console.log('question num and txt: ' + questionNum + ': ' + myQuestion);
+        // agent.setContext({
+        //     name: myResponseType,
+        //     lifespan: 1,
+        //     parameters: { currentQuestion: questionNum },
+        // });
         agent.add(
             `Welcome to the athlete survey. Here comes your first question. ` +
-                myQuestion
+                selectQuestionHandler(agent)
         );
     }
 
@@ -72,18 +76,25 @@ router.post('/', (request, response) => {
     }
 
     // Question Handlers
-    // function askQuestionHandler(agent, questionNumber) {
-    //     var contexts = JSON.stringify(
-    //         request.body.queryResult.outputContexts[0].parameters
-    //             .currentQuestion
-    //     );
-    //     var questionOneResponse = JSON.stringify(
-    //         request.body.queryResult.outputContexts[0].parameters
-    //             .question1Response
-    //     );
-    //     console.log('question number: ' + questionNumber);
-    //     agent.add(`Asking question number ` + questionNumber);
-    // }
+    function selectQuestionHandler(agent) {
+        if (questionNum == '' || questionNum == 1) {
+            questionNum =
+                request.body.queryResult.outputContexts[0].parameters
+                    .currentQuestion;
+        } else {
+            questionNum++;
+        }
+        myQuestion = questionObj['question' + questionNum].question;
+        myResponseType =
+            questionObj['question' + questionNum].expectedResponseType;
+        console.log('question num and txt: ' + questionNum + ': ' + myQuestion);
+        agent.setContext({
+            name: myResponseType,
+            lifespan: 1,
+            parameters: { currentQuestion: questionNum },
+        });
+        return questionObj['question' + questionNum].question;
+    }
 
     // Response Handlers
 
@@ -108,7 +119,7 @@ router.post('/', (request, response) => {
                     `. Please enter a number between 1 and 5.`
             );
         } else {
-            agent.add(`You entered ` + myRatingResponse);
+            agent.add(selectQuestionHandler(agent));
         }
     }
 
